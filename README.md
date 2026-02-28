@@ -51,6 +51,7 @@ Important environment variables (`backend/.env`):
 - `JWT_EXPIRES_IN=7d`
 - `CLIENT_URL=http://localhost:5173`
 - `ADMIN_URL=http://localhost:5174`
+- `CORS_ORIGINS=http://localhost:5173,http://localhost:5174`
 - `ADMIN_EMAIL=admin@example.com`
 - `ADMIN_PASSWORD=Admin@123`
 
@@ -121,3 +122,57 @@ npm run dev
 - Error-handling middleware and input validation
 - MongoDB + Mongoose models and RESTful routes
 - Axios-based API communication and responsive UI
+
+## Vercel Deployment (3 Separate Projects)
+
+Deploy each folder as a separate Vercel project:
+
+1. Backend project root: `backend`
+2. Frontend project root: `frontend`
+3. Admin project root: `admin-panel`
+
+### Backend (Vercel)
+
+Backend is configured as a serverless function:
+
+- [vercel.json](/home/max-cleetus/Videos/expense tracker/backend/vercel.json)
+- [api/index.js](/home/max-cleetus/Videos/expense tracker/backend/api/index.js)
+
+Set these environment variables in Vercel (Backend project):
+
+- `MONGO_URI`
+- `JWT_SECRET`
+- `JWT_EXPIRES_IN`
+- `CLIENT_URL` (your frontend Vercel URL)
+- `ADMIN_URL` (your admin-panel Vercel URL)
+- `CORS_ORIGINS` (comma-separated, e.g. `https://frontend.vercel.app,https://admin.vercel.app`)
+- `ADMIN_EMAIL`
+- `ADMIN_PASSWORD`
+
+After deploy, backend base URL is:
+
+- `https://<your-backend-project>.vercel.app`
+
+API URL used by frontends:
+
+- `https://<your-backend-project>.vercel.app/api`
+
+### Frontend (Vercel)
+
+Frontend SPA rewrite config:
+
+- [vercel.json](/home/max-cleetus/Videos/expense tracker/frontend/vercel.json)
+
+Set environment variable in Vercel (Frontend project):
+
+- `VITE_API_BASE_URL=https://<your-backend-project>.vercel.app/api`
+
+### Admin Panel (Vercel)
+
+Admin SPA rewrite config:
+
+- [vercel.json](/home/max-cleetus/Videos/expense tracker/admin-panel/vercel.json)
+
+Set environment variable in Vercel (Admin project):
+
+- `VITE_API_BASE_URL=https://<your-backend-project>.vercel.app/api`

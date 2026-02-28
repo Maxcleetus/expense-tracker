@@ -13,10 +13,16 @@ const syncAdminUser = async () => {
   const existing = await User.findOne({ email: normalizedEmail }).select('+password');
 
   if (existing) {
-    existing.role = 'admin';
-    existing.password = password;
-    await existing.save();
-    console.log(`Admin account synced: ${existing.email}`);
+    const hasPassword = await existing.comparePassword(password);
+    const needsUpdate = existing.role !== 'admin' || !hasPassword;
+
+    if (needsUpdate) {
+      existing.role = 'admin';
+      existing.password = password;
+      await existing.save();
+      console.log(`Admin account synced: ${existing.email}`);
+    }
+
     return;
   }
 
