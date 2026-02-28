@@ -17,9 +17,13 @@ const allowedOrigins = (process.env.CORS_ORIGINS || '')
 const fallbackOrigins = [process.env.CLIENT_URL, process.env.ADMIN_URL].filter(Boolean);
 const origins = allowedOrigins.length ? allowedOrigins : fallbackOrigins;
 
+const useWildcard = origins.length === 0 || (origins.length === 1 && origins[0] === '*');
+
 app.use(
   cors({
-    origin: origins.length
+    origin: useWildcard
+      ? '*'
+      : origins.length
       ? (origin, callback) => {
           if (!origin || origins.includes(origin)) {
             callback(null, true);
@@ -28,7 +32,7 @@ app.use(
           callback(new Error('Origin not allowed by CORS'));
         }
       : true,
-    credentials: true,
+    credentials: !useWildcard,
   })
 );
 
